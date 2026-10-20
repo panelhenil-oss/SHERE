@@ -1,0 +1,612 @@
+/* ==========================================================
+   DESIGN TOKENS
+   Main colors and spacing live here — change them for a
+   different palette, the design still works without any edits.
+   ========================================================== */
+:root {
+  --bg: #06070a;
+  --surface: rgba(255, 255, 255, 0.045);
+  --surface-strong: rgba(255, 255, 255, 0.07);
+  --border: rgba(255, 255, 255, 0.09);
+  --border-strong: rgba(255, 255, 255, 0.16);
+
+  --text-primary: #f2f3f7;
+  --text-muted: #9498ab;
+  --text-faint: #5c6079;
+
+  --violet: #8b6bff;
+  --violet-soft: rgba(139, 107, 255, 0.35);
+  --cyan: #34d1e0;
+  --green: #35e0a1;
+  --green-soft: rgba(53, 224, 161, 0.35);
+
+  --radius-lg: 22px;
+  --radius-md: 14px;
+  --radius-sm: 9px;
+
+  --font-display: 'Space Grotesk', 'Inter', sans-serif;
+  --font-body: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-mono: 'JetBrains Mono', 'SFMono-Regular', Consolas, monospace;
+}
+
+/* ==========================================================
+   RESET & BASE
+   ========================================================== */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html, body {
+  height: 100%;
+}
+
+body {
+  font-family: var(--font-body);
+  background-color: var(--bg);
+  color: var(--text-primary);
+  min-height: 100vh;
+  overflow-x: hidden;
+  position: relative;
+}
+
+/* ==========================================================
+   AMBIENT BACKGROUND — glow blobs + fine grid
+   Purely decorative, feel free to tweak colors/opacity.
+   ========================================================== */
+.bg-glow {
+  position: fixed;
+  border-radius: 50%;
+  filter: blur(130px);
+  pointer-events: none;
+  z-index: 0;
+}
+
+.bg-glow--one {
+  width: 580px;
+  height: 580px;
+  top: -180px;
+  left: -140px;
+  background: radial-gradient(circle, var(--violet-soft), transparent 70%);
+  animation: drift-one 17s ease-in-out infinite;
+}
+
+.bg-glow--two {
+  width: 620px;
+  height: 620px;
+  bottom: -220px;
+  right: -160px;
+  background: radial-gradient(circle, rgba(52, 209, 224, 0.22), transparent 70%);
+  animation: drift-two 19s ease-in-out infinite;
+}
+
+@keyframes drift-one {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  50% { transform: translate(40px, 30px) scale(1.08); }
+}
+
+@keyframes drift-two {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  50% { transform: translate(-30px, -25px) scale(1.06); }
+}
+
+.bg-grid {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  background-image:
+    linear-gradient(rgba(255, 255, 255, 0.035) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.035) 1px, transparent 1px);
+  background-size: 48px 48px;
+  mask-image: radial-gradient(ellipse 75% 65% at 50% 30%, black 20%, transparent 78%);
+  -webkit-mask-image: radial-gradient(ellipse 75% 65% at 50% 30%, black 20%, transparent 78%);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .bg-glow--one,
+  .bg-glow--two {
+    animation: none;
+  }
+}
+
+/* ==========================================================
+   PAGE LAYOUT
+   ========================================================== */
+.page {
+  position: relative;
+  z-index: 1;
+  max-width: 1080px;
+  margin: 0 auto;
+  padding: 72px 24px 56px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-height: 100vh;
+}
+
+.page-header {
+  text-align: center;
+  margin-bottom: 56px;
+}
+
+.brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 18px;
+}
+
+.brand-mark {
+  font-family: var(--font-mono);
+  font-weight: 500;
+  font-size: 1.1rem;
+  color: var(--green);
+  background: rgba(53, 224, 161, 0.1);
+  border: 1px solid rgba(53, 224, 161, 0.3);
+  padding: 4px 10px;
+  border-radius: 8px;
+}
+
+.brand-name {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 1.1rem;
+  letter-spacing: -0.01em;
+  color: var(--text-primary);
+}
+
+.page-subtitle {
+  font-size: 1rem;
+  color: var(--text-muted);
+  max-width: 460px;
+  margin: 0 auto;
+  line-height: 1.6;
+}
+
+/* ==========================================================
+   GATE — container for step 1 (follow) and step 2 (locked link)
+   ========================================================== */
+.gate {
+  width: 100%;
+  max-width: 460px;
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+}
+
+/* ==========================================================
+   CARD
+   ========================================================== */
+.card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  padding: 32px;
+  border-radius: var(--radius-lg);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.015));
+  border: 1px solid var(--border);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  box-shadow:
+    0 0 0 1px rgba(255, 255, 255, 0.02) inset,
+    0 30px 80px -30px rgba(0, 0, 0, 0.65);
+  overflow: hidden;
+  transition: border-color 0.3s ease, transform 0.3s ease;
+  animation: card-in 0.6s ease both;
+}
+
+.card:nth-child(2) {
+  animation-delay: 0.08s;
+}
+
+@keyframes card-in {
+  from { opacity: 0; transform: translateY(14px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.card:hover {
+  border-color: var(--border-strong);
+  transform: translateY(-3px);
+}
+
+/* Soft glow that intensifies on hover, behind the card content */
+.card-glow {
+  position: absolute;
+  inset: -40%;
+  background: radial-gradient(circle at 30% 0%, var(--violet-soft), transparent 60%);
+  opacity: 0.5;
+  pointer-events: none;
+  transition: opacity 0.4s ease;
+  z-index: 0;
+}
+
+.card:hover .card-glow {
+  opacity: 0.9;
+}
+
+.card-head,
+.code-window,
+.copy-btn {
+  position: relative;
+  z-index: 1;
+}
+
+.card-head {
+  margin-bottom: 18px;
+}
+
+.card-tag {
+  display: inline-block;
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--violet);
+  background: rgba(139, 107, 255, 0.12);
+  border: 1px solid rgba(139, 107, 255, 0.3);
+  padding: 4px 10px;
+  border-radius: 999px;
+  margin-bottom: 14px;
+}
+
+/* Card title — edited in index.html, style stays the same */
+.card-title {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: clamp(1.4rem, 3vw, 1.7rem);
+  letter-spacing: -0.01em;
+  background: linear-gradient(180deg, #ffffff 0%, #b9bacb 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.gate-desc {
+  margin-top: 10px;
+  font-size: 0.92rem;
+  line-height: 1.6;
+  color: var(--text-muted);
+}
+
+/* ==========================================================
+   ACTION ROW — step 1 CTAs, side by side (follow + watch & like)
+   ========================================================== */
+.action-row {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  position: relative;
+  z-index: 1;
+}
+
+.action-btn {
+  width: 100%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 16px 18px;
+  font-family: var(--font-body);
+  font-size: 0.98rem;
+  font-weight: 600;
+  color: #06070a;
+  text-decoration: none;
+  background: linear-gradient(135deg, #ffffff, #d9d4ff);
+  border: none;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  text-align: center;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, filter 0.2s ease, background 0.25s ease;
+  box-shadow: 0 12px 30px -12px var(--violet-soft);
+}
+
+.action-btn span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.action-btn:hover {
+  transform: translateY(-2px);
+  filter: brightness(1.05);
+  box-shadow: 0 16px 36px -12px rgba(139, 107, 255, 0.55);
+}
+
+.action-btn:active {
+  transform: translateY(0);
+}
+
+.action-btn:focus-visible {
+  outline: 2px solid var(--violet);
+  outline-offset: 3px;
+}
+
+/* Once this particular step is already done */
+.action-btn.is-done {
+  background: linear-gradient(135deg, #baffe0, #6ff0bb);
+  box-shadow: 0 16px 36px -12px var(--green-soft);
+  pointer-events: none;
+}
+
+
+.status-text {
+  margin-top: 14px;
+  font-size: 0.85rem;
+  color: var(--text-faint);
+  text-align: center;
+  position: relative;
+  z-index: 1;
+  transition: color 0.3s ease;
+}
+
+.status-text.is-active {
+  color: var(--cyan);
+}
+
+.status-text.is-done {
+  color: var(--green);
+}
+
+/* ==========================================================
+   LOCK WRAP — step 2, locked/unlocked main link
+   ========================================================== */
+.lock-wrap {
+  position: relative;
+  z-index: 1;
+}
+
+.main-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  width: 100%;
+  padding: 16px 24px;
+  font-family: var(--font-body);
+  font-size: 1rem;
+  font-weight: 600;
+  color: #06070a;
+  text-decoration: none;
+  background: linear-gradient(135deg, var(--green), var(--cyan));
+  border: none;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, filter 0.2s ease;
+  box-shadow: 0 12px 30px -12px var(--green-soft);
+}
+
+.main-btn[aria-disabled="true"] {
+  pointer-events: none;
+  opacity: 0.35;
+  filter: grayscale(0.6);
+}
+
+.main-btn:not([aria-disabled="true"]):hover {
+  transform: translateY(-2px);
+  filter: brightness(1.05);
+  box-shadow: 0 16px 36px -12px rgba(53, 224, 161, 0.55);
+}
+
+.main-btn:not([aria-disabled="true"]):active {
+  transform: translateY(0);
+}
+
+.main-btn:not([aria-disabled="true"]):focus-visible {
+  outline: 2px solid var(--green);
+  outline-offset: 3px;
+}
+
+/* Overlay on top of the button while locked / while "verifying" */
+.lock-overlay {
+  position: absolute;
+  inset: -6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  border-radius: calc(var(--radius-sm) + 6px);
+  background: rgba(6, 7, 10, 0.82);
+  backdrop-filter: blur(2px);
+  border: 1px solid var(--border-strong);
+  color: var(--text-muted);
+  font-family: var(--font-mono);
+  font-size: 0.82rem;
+  letter-spacing: 0.02em;
+  transition: opacity 0.35s ease, transform 0.35s ease;
+  pointer-events: none;
+}
+
+.lock-icon {
+  color: var(--text-faint);
+}
+
+.spinner-icon {
+  display: none;
+  color: var(--cyan);
+  animation: spin 0.9s linear infinite;
+}
+
+.lock-overlay.is-verifying .lock-icon {
+  display: none;
+}
+
+.lock-overlay.is-verifying .spinner-icon {
+  display: inline-flex;
+}
+
+.lock-overlay.is-verifying {
+  color: var(--cyan);
+}
+
+.lock-overlay.is-unlocked {
+  opacity: 0;
+  transform: scale(1.03);
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+/* ==========================================================
+   FOOTER
+   ========================================================== */
+.page-footer {
+  margin-top: 48px;
+  text-align: center;
+  font-size: 0.82rem;
+  color: var(--text-faint);
+}
+
+/* ==========================================================
+   TOAST — small confirmation at the bottom of the screen
+   ========================================================== */
+.toast {
+  position: fixed;
+  left: 50%;
+  bottom: 32px;
+  transform: translate(-50%, 20px);
+  padding: 12px 20px;
+  border-radius: 999px;
+  background: rgba(15, 16, 22, 0.92);
+  border: 1px solid var(--border-strong);
+  color: var(--text-primary);
+  font-size: 0.88rem;
+  font-weight: 500;
+  box-shadow: 0 20px 50px -20px rgba(0, 0, 0, 0.7), 0 0 24px -6px var(--green-soft);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease, transform 0.3s ease;
+  z-index: 10;
+}
+
+.toast.is-visible {
+  opacity: 1;
+  transform: translate(-50%, 0);
+}
+
+/* ==========================================================
+   RESPONSIVE — mobile devices
+   ========================================================== */
+@media (max-width: 480px) {
+  .page {
+    padding: 48px 18px 40px;
+  }
+
+  .card {
+    padding: 24px;
+  }
+
+  .code-body {
+    font-size: 0.8rem;
+  }
+
+  .toast {
+    width: calc(100% - 36px);
+    text-align: center;
+  }
+}
+
+/* ==========================================================
+   SHARE GATE — progress dots + share buttons
+   ========================================================== */
+.share-progress {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  margin-bottom: 18px;
+}
+
+.share-dots {
+  display: flex;
+  gap: 8px;
+}
+
+.share-dot {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: var(--surface-strong);
+  border: 1px solid var(--border-strong);
+  transition: background 0.3s ease, box-shadow 0.3s ease, transform 0.3s ease;
+}
+
+.share-dot.is-on {
+  background: var(--green);
+  border-color: var(--green);
+  box-shadow: 0 0 12px var(--green-soft);
+  transform: scale(1.1);
+}
+
+.share-count {
+  font-family: var(--font-mono);
+  font-size: 0.9rem;
+  color: var(--text-muted);
+}
+
+.share-grid {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.share-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 14px 12px;
+  font-family: var(--font-body);
+  font-size: 0.92rem;
+  font-weight: 600;
+  color: #06070a;
+  text-decoration: none;
+  background: linear-gradient(135deg, #ffffff, #d9d4ff);
+  border: none;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: transform 0.2s ease, filter 0.2s ease, box-shadow 0.2s ease;
+  box-shadow: 0 10px 26px -12px var(--violet-soft);
+}
+
+.share-btn:hover {
+  transform: translateY(-2px);
+  filter: brightness(1.05);
+}
+
+.share-btn--wide {
+  grid-column: 1 / -1;
+}
+
+.share-btn--whatsapp { background: linear-gradient(135deg, #7dffa8, #25d366); }
+
+.share-grid.is-locked {
+  opacity: 0.4;
+  pointer-events: none;
+}
+
+.copy-link {
+  position: relative;
+  z-index: 1;
+  margin-top: 12px;
+  width: 100%;
+  padding: 12px;
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  background: transparent;
+  border: 1px dashed var(--border-strong);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: color 0.2s ease, border-color 0.2s ease;
+}
+
+.copy-link:hover {
+  color: var(--text-primary);
+  border-color: var(--violet);
+}
